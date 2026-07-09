@@ -7,6 +7,13 @@ import { Button } from "@/components/ui/button";
 import { ComboboxField } from "@/components/ui/combobox-field";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
@@ -14,6 +21,16 @@ import { toast } from "sonner";
 import { CalendarDays, LogOut, Moon, Send } from "lucide-react";
 
 const ADMIN_WHATSAPP = "6281297929294";
+
+const DAY_OPTIONS = [
+  "Ahad",
+  "Senin",
+  "Selasa",
+  "Rabu",
+  "Kamis",
+  "Jum'at",
+  "Sabtu",
+] as const;
 
 const JUDUL_OPTIONS = [
   "Ad-Daa Wa Ad-Dawaa",
@@ -69,18 +86,29 @@ function formatHijri(dateStr: string): string {
   if (!dateStr) return "";
   try {
     const d = new Date(dateStr + "T12:00:00");
-    return new Intl.DateTimeFormat("en-TN-u-ca-islamic-umalqura", {
+    const raw = new Intl.DateTimeFormat("en-TN-u-ca-islamic-umalqura", {
       day: "numeric", month: "long", year: "numeric",
-    }).format(d).replace(" AH", " H");
+    }).format(d);
+    // raw: "Muharram 24, 1448 AH"
+    const match = raw.match(/^(\w+)\s+(\d+),\s+(\d+)\s+AH$/);
+    if (!match) return raw.replace("AH", "H").trim();
+    const [, month, day, year] = match;
+    return `${day} ${month} ${year} H`;
   } catch {
     return "";
   }
 }
 
+function formatDay(dateStr: string): string {
+  if (!dateStr) return "";
+  const d = new Date(dateStr + "T12:00:00");
+  return DAY_OPTIONS[d.getDay()];
+}
+
 function formatMasehiLong(dateStr: string): string {
   if (!dateStr) return "";
   const d = new Date(dateStr + "T12:00:00");
-  return new Intl.DateTimeFormat("id-ID", { weekday: "long", day: "numeric", month: "long", year: "numeric" }).format(d);
+  return new Intl.DateTimeFormat("id-ID", { day: "numeric", month: "long", year: "numeric" }).format(d);
 }
 
 export const Route = createFileRoute("/_authenticated/kajian")({
@@ -95,6 +123,7 @@ function KajianPage() {
 
   const today = new Date().toISOString().slice(0, 10);
   const [form, setForm] = useState<KajianInput>({
+    hari: formatDay(today),
     tanggalMasehi: today,
     tanggalHijri: formatHijri(today),
     pemateri: "",
@@ -110,6 +139,9 @@ function KajianPage() {
 
   const hijriAuto = useMemo(() => formatHijri(form.tanggalMasehi), [form.tanggalMasehi]);
   useEffect(() => { setForm((f) => ({ ...f, tanggalHijri: hijriAuto })); }, [hijriAuto]);
+
+  const dayAuto = useMemo(() => formatDay(form.tanggalMasehi), [form.tanggalMasehi]);
+  useEffect(() => { setForm((f) => ({ ...f, hari: dayAuto })); }, [dayAuto]);
 
   function update<K extends keyof KajianInput>(k: K, v: KajianInput[K]) {
     setForm((f) => ({ ...f, [k]: v }));
@@ -130,6 +162,7 @@ function KajianPage() {
       const msg = [
         "*Jadwal Kajian Baru — Masjid Imam An-Nawawi*",
         "",
+        `📅 Hari: ${form.hari}`,
         `📅 Masehi: ${formatMasehiLong(form.tanggalMasehi)}`,
         `🌙 Hijriah: ${form.tanggalHijri}`,
         `🎙 Pemateri: ${form.pemateri}`,
@@ -143,7 +176,7 @@ function KajianPage() {
       const waUrl = `https://wa.me/${ADMIN_WHATSAPP}?text=${encodeURIComponent(msg)}`;
       window.open(waUrl, "_blank", "noopener,noreferrer");
 
-      // Reset (kecuali tanggal)
+      // Reset (kecuali tanggal & hari)
       setForm((f) => ({ ...f, pemateri: "", ketPemateri: "", judul: "", ketTambahan: "", jenis: "Umum" }));
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Gagal mengirim");
@@ -188,7 +221,20 @@ function KajianPage() {
           </CardHeader>
           <CardContent className="pt-6">
             <form onSubmit={handleSubmit} className="space-y-5">
-              <div className="grid gap-4 sm:grid-cols-2">
+              <div className="grid gap-4 sm:grid-cols-3">
+                <div className="space-y-2">
+                  <Label htmlFor="hari">Hari</Label>
+                  <Select value={form.hari} onValueChange={(v) => update("hari", v as KajianInput["hari"])}>
+                    <SelectTrigger id="hari" className="h-auto min-h-9 w-full px-3 py-2 text-sm font-normal">
+                      <SelectValue placeholder="Pilih hari..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {DAY_OPTIONS.map((d) => (
+                        <SelectItem key={d} value={d}>{d}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
                 <div className="space-y-2">
                   <Label htmlFor="tanggal">Tanggal Masehi</Label>
                   <Input id="tanggal" type="date" required value={form.tanggalMasehi}
