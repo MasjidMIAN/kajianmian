@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { submitKajian, type KajianInput } from "@/lib/kajian.functions";
 import { Button } from "@/components/ui/button";
+import { ComboboxField } from "@/components/ui/combobox-field";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -13,6 +14,56 @@ import { toast } from "sonner";
 import { CalendarDays, LogOut, Moon, Send } from "lucide-react";
 
 const ADMIN_WHATSAPP = "6281297929294";
+
+const JUDUL_OPTIONS = [
+  "Ad-Daa Wa Ad-Dawaa",
+  "Al-Adzkar An-Nawawiyah",
+  "Al-Jami'ul Ulum Lil Imam Ahmad",
+  "Al-Lu'lu' wal Marjan",
+  "Al-Mausu'ah Al-Fiqhiyah Al-Muyassaroh",
+  "Al-Qaulul Mufid 'ala Kitabit Tauhid",
+  "Aqidah Shohihah",
+  "Bahasa Arab",
+  "Bahjatun Naazhirin Syarh Riyaadhush Shaalihiin",
+  "Fiqih Siroh Nabawi",
+  "Kaifa 'aamalahum Rasulullah Muhammad ﷺ",
+  "Kalimat Thayyibah",
+  "Kifayatul Muta’abbid wa Tuhfatul Mutazahhid",
+  "Kitab Adabul Mufrad",
+  "Kitab Al-Kabair",
+  "Kitab Fiqih Masbuq",
+  "Manhajul Anbiyaa' fii Tazkiyatin Nufuus",
+  "Mashdar Aqidah Ahlis Sunnah wal Jama'ah",
+  "Mausu'ah Nadhrotin Na'im Fi Makarimi Akhlaqir Rasulil Karim",
+  "Mukhtashor Fiqih Islam",
+  "Pentingnya Berilmu",
+  "Risalah Al Imam Muhammad Bin Abdil Wahhab ila Ahli Al-Qashim",
+  "Shahih Al Wabilus Shayyib Minal Kalimit Thayyib",
+  "Shahih Fiqhus Sunnah",
+  "Syarah Shahih Muslim",
+  "Syarah Al-Ushul Ats-Tsalatsah",
+  "Syarhus Sunnah",
+  "Tafsir Juz Amma",
+  "Tahsin/Tajwid",
+  "Tematik",
+  "Yang lain:",
+];
+
+const PEMATERI_OPTIONS = [
+  "Ahmad Baihaqi",
+  "Faiz Abdullah, S.Ag., M.Ag.",
+  "Fadhil Ziyanul Hubbi, SM",
+  "Fathulloh Burhan",
+  "Fityan Amali",
+  "Galih Setiadi",
+  "Hibban Muttabi Al Haq, SH",
+  "Imam Syafi'i",
+  "Muhammad Nazaruddin",
+  "Muhtadi Abdul Munib",
+  "Riza Firmansyah, M.Pd",
+  "Ubaidillah Masyhadi",
+  "Yang lain:",
+];
 
 function formatHijri(dateStr: string): string {
   if (!dateStr) return "";
