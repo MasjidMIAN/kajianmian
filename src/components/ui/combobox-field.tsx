@@ -42,6 +42,7 @@ export function ComboboxField({
     setCustomMode(value !== "" && !options.includes(value));
   }, [value, options]);
 
+  const presetOptions = options.filter((opt) => opt !== CUSTOM_LABEL);
   const isCustom = customMode;
   const displayValue = isCustom ? CUSTOM_VALUE : value;
 
@@ -88,21 +89,33 @@ export function ComboboxField({
             <CommandList>
               <CommandEmpty>Tidak ditemukan.</CommandEmpty>
               <CommandGroup>
-                {options.map((opt) => (
+                {presetOptions.map((opt) => (
                   <CommandItem
                     key={opt}
                     value={opt}
-                    onSelect={() => handleSelect(opt === CUSTOM_LABEL ? CUSTOM_VALUE : opt)}
+                    onSelect={() => handleSelect(opt)}
                   >
                     <Check
                       className={cn(
                         "mr-2 h-4 w-4 shrink-0",
-                        displayValue === (opt === CUSTOM_LABEL ? CUSTOM_VALUE : opt) ? "opacity-100" : "opacity-0"
+                        displayValue === opt ? "opacity-100" : "opacity-0"
                       )}
                     />
                     <span className="truncate">{opt}</span>
                   </CommandItem>
                 ))}
+                <CommandItem
+                  value={CUSTOM_VALUE}
+                  onSelect={() => handleSelect(CUSTOM_VALUE)}
+                >
+                  <Check
+                    className={cn(
+                      "mr-2 h-4 w-4 shrink-0",
+                      displayValue === CUSTOM_VALUE ? "opacity-100" : "opacity-0"
+                    )}
+                  />
+                  <span className="truncate">{CUSTOM_LABEL}</span>
+                </CommandItem>
               </CommandGroup>
             </CommandList>
           </Command>
@@ -122,4 +135,3 @@ export function ComboboxField({
     </div>
   );
 }
-
