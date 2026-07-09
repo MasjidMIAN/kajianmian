@@ -140,7 +140,7 @@ function KajianPage() {
   const hijriAuto = useMemo(() => formatHijri(form.tanggalMasehi), [form.tanggalMasehi]);
   useEffect(() => { setForm((f) => ({ ...f, tanggalHijri: hijriAuto })); }, [hijriAuto]);
 
-  const dayAuto = useMemo(() => formatDay(form.tanggalMasehi), [form.tanggalMasehi]);
+  const dayAuto = useMemo(() => formatDay(form.tanggalMasehi) as KajianInput["hari"], [form.tanggalMasehi]);
   useEffect(() => { setForm((f) => ({ ...f, hari: dayAuto })); }, [dayAuto]);
 
   function update<K extends keyof KajianInput>(k: K, v: KajianInput[K]) {
