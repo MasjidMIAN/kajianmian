@@ -108,14 +108,14 @@
 
 @utility ornament {
   position: relative;
-}
-@utility ornament::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background:
-    linear-gradient(135deg, transparent 48%, var(--color-gold) 49%, var(--color-gold) 51%, transparent 52%),
-    linear-gradient(45deg, transparent 48%, var(--color-gold) 49%, var(--color-gold) 51%, transparent 52%);
-  opacity: 0.1;
-  pointer-events: none;
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(135deg, transparent 48%, var(--color-gold) 49%, var(--color-gold) 51%, transparent 52%),
+      linear-gradient(45deg, transparent 48%, var(--color-gold) 49%, var(--color-gold) 51%, transparent 52%);
+    opacity: 0.1;
+    pointer-events: none;
+  }
 }
