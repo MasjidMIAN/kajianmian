@@ -106,6 +106,7 @@ export function ComboboxField({
                 ))}
                 <CommandItem
                   value={CUSTOM_VALUE}
+                  keywords={["Yang lain", "custom", "lainnya"]}
                   onSelect={() => handleSelect(CUSTOM_VALUE)}
                 >
                   <Check
