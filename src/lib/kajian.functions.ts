@@ -23,6 +23,7 @@ export const submitKajian = createServerFn({ method: "POST" })
     if (!url) throw new Error("GOOGLE_SHEET_WEBHOOK_URL belum diset");
 
     const payload = {
+      hari: data.hari,
       tanggalMasehi: data.tanggalMasehi,
       tanggalHijri: data.tanggalHijri,
       pemateri: data.pemateri,
