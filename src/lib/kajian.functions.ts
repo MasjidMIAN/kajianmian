@@ -3,6 +3,7 @@ import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
 const kajianSchema = z.object({
+  hari: z.enum(["Ahad", "Senin", "Selasa", "Rabu", "Kamis", "Jum'at", "Sabtu"]),
   tanggalMasehi: z.string().min(1),
   tanggalHijri: z.string().min(1),
   pemateri: z.string().trim().min(1).max(200),
