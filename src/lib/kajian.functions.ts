@@ -16,7 +16,7 @@ export type KajianInput = z.infer<typeof kajianSchema>;
 
 export const submitKajian = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) => kajianSchema.parse(input))
+  .validator((input: unknown) => kajianSchema.parse(input))
   .handler(async ({ data, context }) => {
     const url = process.env.GOOGLE_SHEET_WEBHOOK_URL;
     if (!url) throw new Error("GOOGLE_SHEET_WEBHOOK_URL belum diset");
