@@ -3,6 +3,7 @@ import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
 const kajianSchema = z.object({
+  hari: z.enum(["Ahad", "Senin", "Selasa", "Rabu", "Kamis", "Jum'at", "Sabtu"]),
   tanggalMasehi: z.string().min(1),
   tanggalHijri: z.string().min(1),
   pemateri: z.string().trim().min(1).max(200),
@@ -22,6 +23,7 @@ export const submitKajian = createServerFn({ method: "POST" })
     if (!url) throw new Error("GOOGLE_SHEET_WEBHOOK_URL belum diset");
 
     const payload = {
+      hari: data.hari,
       tanggalMasehi: data.tanggalMasehi,
       tanggalHijri: data.tanggalHijri,
       pemateri: data.pemateri,
