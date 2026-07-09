@@ -35,13 +35,22 @@ export function ComboboxField({
   required,
 }: ComboboxFieldProps) {
   const [open, setOpen] = React.useState(false);
-  const isCustom = value !== "" && value !== CUSTOM_VALUE && !options.includes(value);
+  const [customMode, setCustomMode] = React.useState(() => value !== "" && !options.includes(value));
+
+  // Sync customMode if the parent value changes from outside.
+  React.useEffect(() => {
+    setCustomMode(value !== "" && !options.includes(value));
+  }, [value, options]);
+
+  const isCustom = customMode;
   const displayValue = isCustom ? CUSTOM_VALUE : value;
 
   function handleSelect(selected: string) {
     if (selected === CUSTOM_VALUE) {
+      setCustomMode(true);
       onChange("");
     } else {
+      setCustomMode(false);
       onChange(selected);
     }
     setOpen(false);
@@ -100,7 +109,7 @@ export function ComboboxField({
         </PopoverContent>
       </Popover>
 
-      {displayValue === CUSTOM_VALUE && (
+      {isCustom && (
         <Input
           id={`${id}-custom`}
           required={required}
@@ -113,3 +122,4 @@ export function ComboboxField({
     </div>
   );
 }
+
