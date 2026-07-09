@@ -204,11 +204,16 @@ function KajianPage() {
               </div>
 
               <div className="grid gap-4 sm:grid-cols-2">
-                <div className="space-y-2">
-                  <Label htmlFor="pemateri">Pemateri</Label>
-                  <Input id="pemateri" required maxLength={200} placeholder="Ust. ..."
-                    value={form.pemateri} onChange={(e) => update("pemateri", e.target.value)} />
-                </div>
+                <ComboboxField
+                  id="pemateri"
+                  label="Pemateri"
+                  options={PEMATERI_OPTIONS}
+                  value={form.pemateri}
+                  onChange={(v) => update("pemateri", v)}
+                  placeholder="Pilih pemateri..."
+                  customPlaceholder="Ketik nama pemateri lain..."
+                  required
+                />
                 <div className="space-y-2">
                   <Label htmlFor="ket-pemateri">Ket. Pemateri</Label>
                   <Input id="ket-pemateri" maxLength={300} placeholder="Asal / afiliasi (opsional)"
@@ -216,11 +221,16 @@ function KajianPage() {
                 </div>
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="judul">Judul Kajian</Label>
-                <Input id="judul" required maxLength={300} placeholder="Contoh: Adab Menuntut Ilmu"
-                  value={form.judul} onChange={(e) => update("judul", e.target.value)} />
-              </div>
+              <ComboboxField
+                id="judul"
+                label="Judul Kajian"
+                options={JUDUL_OPTIONS}
+                value={form.judul}
+                onChange={(v) => update("judul", v)}
+                placeholder="Pilih judul kajian..."
+                customPlaceholder="Ketik judul kajian lain..."
+                required
+              />
 
               <div className="space-y-2">
                 <Label htmlFor="ket">Keterangan Tambahan</Label>
