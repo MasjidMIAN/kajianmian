@@ -133,7 +133,7 @@ function KajianPage() {
   const [form, setForm] = useState<KajianInput>({
     hari: formatDay(today) as KajianInput["hari"],
     tanggalMasehi: today,
-    tanggalHijri: formatHijri(today),
+    tanggalHijri: formatHijri(today, "Ba'da Maghrib 🌙"),
     pemateri: "",
     ketPemateri: "",
     judul: "",
