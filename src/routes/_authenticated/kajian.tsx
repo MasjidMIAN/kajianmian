@@ -146,7 +146,10 @@ function KajianPage() {
     supabase.auth.getUser().then(({ data }) => setEmail(data.user?.email ?? null));
   }, []);
 
-  const hijriAuto = useMemo(() => formatHijri(form.tanggalMasehi), [form.tanggalMasehi]);
+  const hijriAuto = useMemo(
+    () => formatHijri(form.tanggalMasehi, form.kajianRutin),
+    [form.tanggalMasehi, form.kajianRutin]
+  );
   useEffect(() => { setForm((f) => ({ ...f, tanggalHijri: hijriAuto })); }, [hijriAuto]);
 
   const dayAuto = useMemo(() => formatDay(form.tanggalMasehi) as KajianInput["hari"], [form.tanggalMasehi]);
