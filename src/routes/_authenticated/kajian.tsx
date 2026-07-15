@@ -130,7 +130,8 @@ function KajianPage() {
     ketPemateri: "",
     judul: "",
     ketTambahan: "",
-    jenis: "Umum",
+    kajianRutin: "Ba'da Maghrib 🌙",
+    peserta: "Ikhwan & Akhwat",
   });
 
   useEffect(() => {
@@ -169,7 +170,8 @@ function KajianPage() {
         form.ketPemateri ? `   (${form.ketPemateri})` : "",
         `📖 Judul: ${form.judul}`,
         form.ketTambahan ? `📝 Catatan: ${form.ketTambahan}` : "",
-        `👥 Jenis: ${form.jenis}`,
+        `🕌 Kajian Rutin: ${form.kajianRutin}`,
+        `👥 Peserta: ${form.peserta}`,
         "",
         `Diinput oleh: ${email ?? "panitia"}`,
       ].filter(Boolean).join("\n");
@@ -177,7 +179,7 @@ function KajianPage() {
       window.open(waUrl, "_blank", "noopener,noreferrer");
 
       // Reset (kecuali tanggal & hari)
-      setForm((f) => ({ ...f, pemateri: "", ketPemateri: "", judul: "", ketTambahan: "", jenis: "Umum" }));
+      setForm((f) => ({ ...f, pemateri: "", ketPemateri: "", judul: "", ketTambahan: "" }));
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Gagal mengirim");
     } finally {
@@ -284,20 +286,37 @@ function KajianPage() {
                   value={form.ketTambahan} onChange={(e) => update("ketTambahan", e.target.value)} />
               </div>
 
-              <div className="space-y-3">
-                <Label>Jenis Kajian</Label>
-                <RadioGroup value={form.jenis} onValueChange={(v) => update("jenis", v as "Umum" | "Khusus")}
-                  className="grid grid-cols-2 gap-3">
-                  {(["Umum", "Khusus"] as const).map((j) => (
-                    <label key={j}
-                      className={`flex cursor-pointer items-center gap-3 rounded-lg border p-3 transition ${
-                        form.jenis === j ? "border-primary bg-primary/5" : "border-border hover:border-primary/40"
-                      }`}>
-                      <RadioGroupItem value={j} id={`j-${j}`} />
-                      <span className="font-medium">{j}</span>
-                    </label>
-                  ))}
-                </RadioGroup>
+              <div className="grid gap-5 sm:grid-cols-2">
+                <div className="space-y-3">
+                  <Label>Kajian Rutin</Label>
+                  <RadioGroup value={form.kajianRutin} onValueChange={(v) => update("kajianRutin", v as KajianInput["kajianRutin"])}
+                    className="grid grid-cols-1 gap-3">
+                    {(["Ba'da Maghrib 🌙", "Ba'da Shubuh 🌄", "Ba'da Ashar"] as const).map((j) => (
+                      <label key={j}
+                        className={`flex cursor-pointer items-center gap-3 rounded-lg border p-3 transition ${
+                          form.kajianRutin === j ? "border-primary bg-primary/5" : "border-border hover:border-primary/40"
+                        }`}>
+                        <RadioGroupItem value={j} id={`kr-${j}`} />
+                        <span className="font-medium">{j}</span>
+                      </label>
+                    ))}
+                  </RadioGroup>
+                </div>
+                <div className="space-y-3">
+                  <Label>Peserta</Label>
+                  <RadioGroup value={form.peserta} onValueChange={(v) => update("peserta", v as KajianInput["peserta"])}
+                    className="grid grid-cols-1 gap-3">
+                    {(["Ikhwan & Akhwat", "Khusus Ikhwan"] as const).map((p) => (
+                      <label key={p}
+                        className={`flex cursor-pointer items-center gap-3 rounded-lg border p-3 transition ${
+                          form.peserta === p ? "border-primary bg-primary/5" : "border-border hover:border-primary/40"
+                        }`}>
+                        <RadioGroupItem value={p} id={`p-${p}`} />
+                        <span className="font-medium">{p}</span>
+                      </label>
+                    ))}
+                  </RadioGroup>
+                </div>
               </div>
 
               <Button type="submit" size="lg" className="w-full gap-2" disabled={loading}>
