@@ -11,7 +11,7 @@ const kajianSchema = z.object({
   judul: z.string().trim().min(1).max(300),
   ketTambahan: z.string().trim().max(1000).default(""),
   kajianRutin: z.enum(["Ba'da Maghrib 🌙", "Ba'da Shubuh 🌄", "Ba'da Ashar"]),
-  peserta: z.enum(["Ikhwan & Akhwat", "Khusus Ikhwan"]),
+  jenis: z.enum(["Umum", "Khusus Muslimah"]),
 });
 
 export type KajianInput = z.infer<typeof kajianSchema>;
@@ -32,7 +32,7 @@ export const submitKajian = createServerFn({ method: "POST" })
       judul: data.judul,
       ketTambahan: data.ketTambahan,
       kajianRutin: data.kajianRutin,
-      peserta: data.peserta,
+      jenis: data.jenis,
       submittedBy: context.claims?.email ?? context.userId,
       submittedAt: new Date().toISOString(),
     };
