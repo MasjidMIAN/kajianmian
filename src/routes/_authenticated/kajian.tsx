@@ -131,7 +131,7 @@ function KajianPage() {
     judul: "",
     ketTambahan: "",
     kajianRutin: "Ba'da Maghrib 🌙",
-    peserta: "Ikhwan & Akhwat",
+    jenis: "Umum",
   });
 
   useEffect(() => {
@@ -171,7 +171,7 @@ function KajianPage() {
         `📖 Judul: ${form.judul}`,
         form.ketTambahan ? `📝 Catatan: ${form.ketTambahan}` : "",
         `🕌 Kajian Rutin: ${form.kajianRutin}`,
-        `👥 Peserta: ${form.peserta}`,
+        `👥 Jenis Kajian: ${form.jenis}`,
         "",
         `Diinput oleh: ${email ?? "panitia"}`,
       ].filter(Boolean).join("\n");
@@ -264,7 +264,7 @@ function KajianPage() {
                 />
                 <div className="space-y-2">
                   <Label htmlFor="ket-pemateri">Ket. Pemateri</Label>
-                  <Input id="ket-pemateri" maxLength={300} placeholder="Asal / afiliasi (opsional)"
+                  <Input id="ket-pemateri" maxLength={300} placeholder="Misal: Badal ustadz fulan"
                     value={form.ketPemateri} onChange={(e) => update("ketPemateri", e.target.value)} />
                 </div>
               </div>
@@ -303,15 +303,15 @@ function KajianPage() {
                   </RadioGroup>
                 </div>
                 <div className="space-y-3">
-                  <Label>Peserta</Label>
-                  <RadioGroup value={form.peserta} onValueChange={(v) => update("peserta", v as KajianInput["peserta"])}
+                  <Label>Jenis Kajian</Label>
+                  <RadioGroup value={form.jenis} onValueChange={(v) => update("jenis", v as KajianInput["jenis"])}
                     className="grid grid-cols-1 gap-3">
-                    {(["Ikhwan & Akhwat", "Khusus Ikhwan"] as const).map((p) => (
+                    {(["Umum", "Khusus Muslimah"] as const).map((p) => (
                       <label key={p}
                         className={`flex cursor-pointer items-center gap-3 rounded-lg border p-3 transition ${
-                          form.peserta === p ? "border-primary bg-primary/5" : "border-border hover:border-primary/40"
+                          form.jenis === p ? "border-primary bg-primary/5" : "border-border hover:border-primary/40"
                         }`}>
-                        <RadioGroupItem value={p} id={`p-${p}`} />
+                        <RadioGroupItem value={p} id={`j-${p}`} />
                         <span className="font-medium">{p}</span>
                       </label>
                     ))}
