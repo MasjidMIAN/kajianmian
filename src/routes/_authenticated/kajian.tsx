@@ -82,10 +82,18 @@ const PEMATERI_OPTIONS = [
   "Yang lain:",
 ];
 
-function formatHijri(dateStr: string): string {
+function addDays(dateStr: string, days: number): Date {
+  const d = new Date(dateStr + "T12:00:00");
+  d.setDate(d.getDate() + days);
+  return d;
+}
+
+function formatHijri(dateStr: string, kajianRutin: KajianInput["kajianRutin"] = "Ba'da Maghrib 🌙"): string {
   if (!dateStr) return "";
   try {
-    const d = new Date(dateStr + "T12:00:00");
+    // Kajian setelah Maghrib sudah masuk tanggal Hijriyah baru, jadi +1 hari
+    const daysToAdd = kajianRutin === "Ba'da Maghrib 🌙" ? 1 : 0;
+    const d = addDays(dateStr, daysToAdd);
     const raw = new Intl.DateTimeFormat("en-TN-u-ca-islamic-umalqura", {
       day: "numeric", month: "long", year: "numeric",
     }).format(d);
