@@ -94,13 +94,13 @@ function formatHijri(dateStr: string, kajianRutin: KajianInput["kajianRutin"] = 
     // Kajian setelah Maghrib sudah masuk tanggal Hijriyah baru, jadi +1 hari
     const daysToAdd = kajianRutin === "Ba'da Maghrib 🌙" ? 1 : 0;
     const d = addDays(dateStr, daysToAdd);
-    const raw = new Intl.DateTimeFormat("en-TN-u-ca-islamic-umalqura", {
+    const parts = new Intl.DateTimeFormat("en-u-ca-islamic-umalqura", {
       day: "numeric", month: "long", year: "numeric",
-    }).format(d);
-    // raw: "Muharram 24, 1448 AH"
-    const match = raw.match(/^(\w+)\s+(\d+),\s+(\d+)\s+AH$/);
-    if (!match) return raw.replace("AH", "H").trim();
-    const [, month, day, year] = match;
+    }).formatToParts(d);
+    const day = parts.find((p) => p.type === "day")?.value ?? "";
+    const month = parts.find((p) => p.type === "month")?.value ?? "";
+    const year = parts.find((p) => p.type === "year")?.value ?? "";
+    if (!day || !month || !year) return "";
     return `${day} ${month} ${year} H`;
   } catch {
     return "";
@@ -262,6 +262,39 @@ function KajianPage() {
                 </div>
               </div>
 
+              <div className="grid gap-5 sm:grid-cols-2">
+                <div className="space-y-3">
+                  <Label>Kajian Rutin</Label>
+                  <RadioGroup value={form.kajianRutin} onValueChange={(v) => update("kajianRutin", v as KajianInput["kajianRutin"])}
+                    className="grid grid-cols-1 gap-3">
+                    {(["Ba'da Maghrib 🌙", "Ba'da Shubuh 🌄", "Ba'da Ashar"] as const).map((j) => (
+                      <label key={j}
+                        className={`flex cursor-pointer items-center gap-3 rounded-lg border p-3 transition ${
+                          form.kajianRutin === j ? "border-primary bg-primary/5" : "border-border hover:border-primary/40"
+                        }`}>
+                        <RadioGroupItem value={j} id={`kr-${j}`} />
+                        <span className="font-medium">{j}</span>
+                      </label>
+                    ))}
+                  </RadioGroup>
+                </div>
+                <div className="space-y-3">
+                  <Label>Jenis Kajian</Label>
+                  <RadioGroup value={form.jenis} onValueChange={(v) => update("jenis", v as KajianInput["jenis"])}
+                    className="grid grid-cols-1 gap-3">
+                    {(["Umum", "Khusus Muslimah"] as const).map((p) => (
+                      <label key={p}
+                        className={`flex cursor-pointer items-center gap-3 rounded-lg border p-3 transition ${
+                          form.jenis === p ? "border-primary bg-primary/5" : "border-border hover:border-primary/40"
+                        }`}>
+                        <RadioGroupItem value={p} id={`j-${p}`} />
+                        <span className="font-medium">{p}</span>
+                      </label>
+                    ))}
+                  </RadioGroup>
+                </div>
+              </div>
+
               <div className="grid gap-4 sm:grid-cols-2">
                 <ComboboxField
                   id="pemateri"
@@ -297,38 +330,6 @@ function KajianPage() {
                   value={form.ketTambahan} onChange={(e) => update("ketTambahan", e.target.value)} />
               </div>
 
-              <div className="grid gap-5 sm:grid-cols-2">
-                <div className="space-y-3">
-                  <Label>Kajian Rutin</Label>
-                  <RadioGroup value={form.kajianRutin} onValueChange={(v) => update("kajianRutin", v as KajianInput["kajianRutin"])}
-                    className="grid grid-cols-1 gap-3">
-                    {(["Ba'da Maghrib 🌙", "Ba'da Shubuh 🌄", "Ba'da Ashar"] as const).map((j) => (
-                      <label key={j}
-                        className={`flex cursor-pointer items-center gap-3 rounded-lg border p-3 transition ${
-                          form.kajianRutin === j ? "border-primary bg-primary/5" : "border-border hover:border-primary/40"
-                        }`}>
-                        <RadioGroupItem value={j} id={`kr-${j}`} />
-                        <span className="font-medium">{j}</span>
-                      </label>
-                    ))}
-                  </RadioGroup>
-                </div>
-                <div className="space-y-3">
-                  <Label>Jenis Kajian</Label>
-                  <RadioGroup value={form.jenis} onValueChange={(v) => update("jenis", v as KajianInput["jenis"])}
-                    className="grid grid-cols-1 gap-3">
-                    {(["Umum", "Khusus Muslimah"] as const).map((p) => (
-                      <label key={p}
-                        className={`flex cursor-pointer items-center gap-3 rounded-lg border p-3 transition ${
-                          form.jenis === p ? "border-primary bg-primary/5" : "border-border hover:border-primary/40"
-                        }`}>
-                        <RadioGroupItem value={p} id={`j-${p}`} />
-                        <span className="font-medium">{p}</span>
-                      </label>
-                    ))}
-                  </RadioGroup>
-                </div>
-              </div>
 
               <Button type="submit" size="lg" className="w-full gap-2" disabled={loading}>
                 <Send className="h-4 w-4" />
