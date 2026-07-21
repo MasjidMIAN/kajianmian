@@ -88,24 +88,47 @@ function addDays(dateStr: string, days: number): Date {
   return d;
 }
 
+const HIJRI_MONTHS_ID = [
+  "Muharram", "Safar", "Rabi'ul Awwal", "Rabi'ul Akhir",
+  "Jumadil Awwal", "Jumadil Akhir", "Rajab", "Sya'ban",
+  "Ramadhan", "Syawwal", "Dzulqa'dah", "Dzulhijjah",
+];
+
+// Konversi Gregorian → Hijri (tabular civil, reliable di semua browser)
+function gregorianToHijri(gy: number, gm: number, gd: number) {
+  const jd =
+    Math.floor((1461 * (gy + 4800 + Math.floor((gm - 14) / 12))) / 4) +
+    Math.floor((367 * (gm - 2 - 12 * Math.floor((gm - 14) / 12))) / 12) -
+    Math.floor((3 * Math.floor((gy + 4900 + Math.floor((gm - 14) / 12)) / 100)) / 4) +
+    gd - 32075;
+  const l0 = jd - 1948440 + 10632;
+  const n = Math.floor((l0 - 1) / 10631);
+  let l = l0 - 10631 * n + 354;
+  const j =
+    Math.floor((10985 - l) / 5316) * Math.floor((50 * l) / 17719) +
+    Math.floor(l / 5670) * Math.floor((43 * l) / 15238);
+  l = l - Math.floor((30 - j) / 15) * Math.floor((17719 * j) / 50) -
+      Math.floor(j / 16) * Math.floor((15238 * j) / 43) + 29;
+  const month = Math.floor((24 * l) / 709);
+  const day = l - Math.floor((709 * month) / 24);
+  const year = 30 * n + j - 30;
+  return { year, month, day };
+}
+
 function formatHijri(dateStr: string, kajianRutin: KajianInput["kajianRutin"] = "Ba'da Maghrib 🌙"): string {
   if (!dateStr) return "";
   try {
-    // Kajian setelah Maghrib sudah masuk tanggal Hijriyah baru, jadi +1 hari
     const daysToAdd = kajianRutin === "Ba'da Maghrib 🌙" ? 1 : 0;
     const d = addDays(dateStr, daysToAdd);
-    const parts = new Intl.DateTimeFormat("en-u-ca-islamic-umalqura", {
-      day: "numeric", month: "long", year: "numeric",
-    }).formatToParts(d);
-    const day = parts.find((p) => p.type === "day")?.value ?? "";
-    const month = parts.find((p) => p.type === "month")?.value ?? "";
-    const year = parts.find((p) => p.type === "year")?.value ?? "";
-    if (!day || !month || !year) return "";
-    return `${day} ${month} ${year} H`;
+    const { year, month, day } = gregorianToHijri(d.getFullYear(), d.getMonth() + 1, d.getDate());
+    const monthName = HIJRI_MONTHS_ID[month - 1] ?? "";
+    if (!monthName) return "";
+    return `${day} ${monthName} ${year} H`;
   } catch {
     return "";
   }
 }
+
 
 function formatDay(dateStr: string): string {
   if (!dateStr) return "";
