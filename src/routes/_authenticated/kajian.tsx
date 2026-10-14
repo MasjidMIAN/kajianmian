@@ -190,110 +190,11 @@ function KajianPage() {
     }
     setLoading(true);
     try {
-      await submit({ data: form });
+      const result = await submit({ data: form });
       toast.success("Jadwal tersimpan ke Google Sheet");
 
-      // Kirim notifikasi WhatsApp ke admin via wa.me
-      const waktuMap: Record<string, string> = {
-        "Ba'da Maghrib 🌙": "Ba'da Maghrib s/d 'Isya",
-        "Ba'da Shubuh 🌄": "Ba'da Shubuh s/d Selesai",
-        "Ba'da Ashar": "Ba'da Ashar s/d Menjelang Maghrib"
-      };
-
-      const jenisText = form.jenis === "Khusus Muslimah" 
-        ? "*_Khusus Muslimah_*" 
-        : "*_Terbuka Untuk Umum, Ikhwan & Akhwat_*";
-
-      const waktuKajian = waktuMap[form.kajianRutin] || form.kajianRutin;
-
-      const msg = [
-        `*_${form.kajianRutin.toUpperCase()}_*`,
-        "*Masjid Imam An-Nawawi (MIAN)*",
-        jenisText,
-        "",
-        "👤 *Bersama:*",
-        `*Ustadz ${form.pemateri}* حفظه الله`,
-        ...(form.ketPemateri ? [`_(${form.ketPemateri})_`] : []),
-        "",
-        "📖 *Pembahasan:*",
-        `*_${form.judul}_*`,
-        ...(form.ketTambahan ? [`_${form.ketTambahan}_`] : []),
-        "",
-        "🗓️ *Hari/Tanggal:*",
-        `_${form.hari}, ${formatMasehiLong(form.tanggalMasehi)} / ${form.tanggalHijri}_`,
-        "",
-        "🕰 *Waktu:*",
-        waktuKajian,
-        "",
-        "🕌 *Tempat:*",
-        "*Masjid Imam An-Nawawi*",
-        "*Komplek Yayasan Al-Hanif Al-Atsariyah*",
-        "*Perumnas Cibeber  Blok F*",
-        "*Cibeber - Cilegon*",
-        "Peta: https://s.id/PetaMIAN",
-        "_(klik https://s.id/ReviewMIAN utk berikan ulasan positif & bintang 5)_",
-        "",
-        "*Contact Person :*",
-        "*Atho Muhsin:*",
-        "📲 wa.me/628176447930",
-        "*Poppy Irawan:*",
-        "📲 wa.me/628111256032",
-        "",
-        "",
-        "╭❀:۪۪───────••────────╮",
-        "Penyelenggara:",
-        "💫 *DKM Imam An-Nawawi (MIAN)*",
-        "💫 *Yayasan Al Hanif Al Atsariyah Cilegon*",
-        "╰────────••──────❀:۪۪⸙͎╯",
-        "",
-        "*Infaq Kegiatan MIAN*:",
-        "No Rek *707 585 6088 (BSI)*",
-        "a.n *DKM Imam An-Nawawi*",
-        "Tambahkan kode 3 digit angka berikut di akhir nominal transfer utk masing² program:",
-        "*002*: Operasional Masjid",
-        "*003*: Zakat Maal",
-        "*004*: Infaq lainnya",
-        "Contoh: *Rp. 100.002*",
-        "Konfirmasi: wa.me/6281280000254",
-        "",
-        "*Infaq AC Masjid Imam An-Nawawi*",
-        "BSI : 700-339-3571",
-        "Yayasan Al-Hanif Cilegon",
-        "Konfirmasi: wa.me/6287771229417",
-        "Laporan: s.id/InfaqMIAN",
-        "",
-        "*Pembangunan Masjid AHIBS Cikerai:*",
-        "BSI No. 8888-55-1160 (BSI)",
-        "An. Al-Hanif Cilegon",
-        "Laporan: s.id/InfaqAHIBS",
-        "",
-        "➖️➖️➖️",
-        "Rasulullah ﷺ bersabda:",
-        "مَنْ سَلَكَ طَرِيقًا يَلْتَمِسُ فِيهِ عِلْمًا سَهَّلَ اللَّهُ لَهُ طَرِيقًا إِلَى الجَنَّةِ",
-        "",
-        "_“Siapa saja yang menempuh perjalanan untuk mencari ilmu Islam, maka akan Allah mudahkan jalannya menuju surga.”_ (HR. Muslim).",
-        "",
-        "•┈┈┈┈•✿❁✿•┈┈┈┈•",
-        "",
-        "♻Dipublish oleh *Alhanif Broadcast Center (ABC)*",
-        "*089-939-69-ABC(222)*",
-        "",
-        "*Channel Telegram:*",
-        "t.me/YayasanAlhanif",
-        "*Fanspage FB:*",
-        "fb.com/YayasanAlhanif",
-        "*Instagram:*",
-        "instagram.com/YayasanAlhanif",
-        "*YouTube:*",
-        "YouTube.com/YayasanalhanifCilegon",
-        "*Saluran/Chanel WA:* bit.ly/SalWA-YAH",
-        "",
-        "*WhatsApp Group Ikhwan:*",
-        "bit.ly/GrupAlhanif",
-        "*WhatsApp Group Akhwat:*",
-        "bit.ly/GrupMuslimAH"
-      ].join("\n");
-      const waUrl = `https://wa.me/${ADMIN_WHATSAPP}?text=${encodeURIComponent(msg)}`;
+      // Teks WhatsApp diambil dari properti "message" response Apps Script
+      const waUrl = `https://wa.me/${ADMIN_WHATSAPP}?text=${encodeURIComponent(result.message)}`;
       window.open(waUrl, "_blank", "noopener,noreferrer");
 
       // Reset (kecuali tanggal & hari)

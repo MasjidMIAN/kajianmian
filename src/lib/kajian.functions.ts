@@ -50,5 +50,17 @@ export const submitKajian = createServerFn({ method: "POST" })
       throw new Error(`Gagal simpan ke Google Sheet (${res.status})`);
     }
 
-    return { ok: true as const, payload };
+    // Ambil properti "message" dari response JSON Apps Script
+    let message = "";
+    try {
+      const json = (await res.json()) as { message?: unknown };
+      if (typeof json?.message === "string") message = json.message;
+    } catch {
+      console.error("Response Apps Script bukan JSON valid");
+    }
+    if (!message) {
+      throw new Error("Apps Script tidak mengembalikan properti 'message'");
+    }
+
+    return { ok: true as const, message, payload };
   });
