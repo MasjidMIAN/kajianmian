@@ -191,10 +191,13 @@ function KajianPage() {
     setLoading(true);
     try {
       const result = await submit({ data: form });
-      toast.success("Jadwal tersimpan ke Google Sheet");
 
-      // Teks WhatsApp diambil dari properti "message" response Apps Script
-      const waUrl = `https://wa.me/${ADMIN_WHATSAPP}?text=${encodeURIComponent(result.message)}`;
+      // WAJIB: teks WhatsApp hanya dari properti "message" response Apps Script
+      if (!result.message || !result.message.trim()) {
+        toast.error("Pesan WhatsApp kosong — periksa response Apps Script");
+        return;
+      }
+      const waUrl = `https://api.whatsapp.com/send?phone=${ADMIN_WHATSAPP}&text=${encodeURIComponent(result.message)}`;
       window.open(waUrl, "_blank", "noopener,noreferrer");
 
       // Reset (kecuali tanggal & hari)
