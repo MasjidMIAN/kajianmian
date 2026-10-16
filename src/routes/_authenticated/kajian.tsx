@@ -2,7 +2,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { submitKajian, type KajianInput } from "@/lib/kajian.functions";
+import { submitKajian, getJudulOptions, type KajianInput } from "@/lib/kajian.functions";
 import { Button } from "@/components/ui/button";
 import { ComboboxField } from "@/components/ui/combobox-field";
 import { Input } from "@/components/ui/input";
@@ -149,6 +149,22 @@ export const Route = createFileRoute("/_authenticated/kajian")({
 function KajianPage() {
   const navigate = useNavigate();
   const submit = useServerFn(submitKajian);
+  const fetchJudul = useServerFn(getJudulOptions);
+  const [judulOptions, setJudulOptions] = useState<string[]>(JUDUL_OPTIONS);
+
+  useEffect(() => {
+    fetchJudul()
+      .then((res) => {
+        if (res.data.length) {
+          const list = res.data.filter((x) => x !== "Yang lain:");
+          setJudulOptions([...list, "Yang lain:"]);
+        }
+      })
+      .catch((err) => {
+        console.error(err);
+        toast.error("Gagal memuat daftar judul dari Google Sheet");
+      });
+  }, []);
   const [email, setEmail] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -327,7 +343,7 @@ function KajianPage() {
               <ComboboxField
                 id="judul"
                 label="Judul Kajian"
-                options={JUDUL_OPTIONS}
+                options={judulOptions}
                 value={form.judul}
                 onChange={(v) => update("judul", v)}
                 placeholder="Pilih judul kajian..."
