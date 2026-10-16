@@ -263,6 +263,12 @@ function KajianPage() {
             <form onSubmit={handleSubmit} className="space-y-5">
               <div className="grid gap-4 sm:grid-cols-3">
                 <div className="space-y-2">
+                  <Label htmlFor="tanggal">Tanggal Masehi</Label>
+                  <Input id="tanggal" type="date" required value={form.tanggalMasehi}
+                    onChange={(e) => update("tanggalMasehi", e.target.value)} />
+                  <p className="text-xs text-muted-foreground">{formatMasehiLong(form.tanggalMasehi)}</p>
+                </div>
+                <div className="space-y-2">
                   <Label htmlFor="hari">Hari</Label>
                   <Select value={form.hari} onValueChange={(v) => update("hari", v as KajianInput["hari"])}>
                     <SelectTrigger id="hari" className="h-auto min-h-9 w-full px-3 py-2 text-sm font-normal">
@@ -274,12 +280,6 @@ function KajianPage() {
                       ))}
                     </SelectContent>
                   </Select>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="tanggal">Tanggal Masehi</Label>
-                  <Input id="tanggal" type="date" required value={form.tanggalMasehi}
-                    onChange={(e) => update("tanggalMasehi", e.target.value)} />
-                  <p className="text-xs text-muted-foreground">{formatMasehiLong(form.tanggalMasehi)}</p>
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="hijri">Tanggal Hijriah</Label>
