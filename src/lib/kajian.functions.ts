@@ -16,6 +16,20 @@ const kajianSchema = z.object({
 
 export type KajianInput = z.infer<typeof kajianSchema>;
 
+export const getJudulOptions = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async () => {
+    const url = process.env.GOOGLE_SHEET_WEBHOOK_URL;
+    if (!url) throw new Error("GOOGLE_SHEET_WEBHOOK_URL belum diset");
+    const res = await fetch(url, { method: "GET", redirect: "follow" });
+    if (!res.ok) throw new Error(`Gagal ambil judul (${res.status})`);
+    const json = (await res.json()) as { data?: unknown };
+    const data = Array.isArray(json?.data)
+      ? json.data.map((x) => String(x ?? "").trim()).filter(Boolean)
+      : [];
+    return { data };
+  });
+
 export const submitKajian = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .validator((input: unknown) => kajianSchema.parse(input))
