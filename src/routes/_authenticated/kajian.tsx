@@ -306,32 +306,53 @@ function KajianPage() {
                   </RadioGroup>
                 </div>
                 <div className="space-y-2">
-                  <Label>Jenis Kajian</Label>
+                  <Label className="font-semibold">Jenis Kajian</Label>
                   <RadioGroup
                     value={form.jenis}
                     onValueChange={(val) => setForm({ ...form, jenis: val })}
-                    className="grid grid-cols-1 gap-2 sm:grid-cols-3"
+                    className="flex flex-col gap-2"
                   >
                     {/* Pilihan 1: Umum */}
-                    <div className="flex items-center space-x-2 rounded-lg border p-3 hover:bg-slate-50 cursor-pointer">
+                    <div
+                      onClick={() => setForm({ ...form, jenis: "Umum" })}
+                      className={`flex items-center space-x-3 rounded-lg border p-3 cursor-pointer transition-colors ${
+                        form.jenis === "Umum"
+                          ? "border-emerald-600 bg-emerald-50/40 text-emerald-950 font-medium"
+                          : "border-slate-200 hover:bg-slate-50 text-slate-700"
+                      }`}
+                    >
                       <RadioGroupItem value="Umum" id="jenis-umum" />
-                      <Label htmlFor="jenis-umum" className="cursor-pointer font-medium">
+                      <Label htmlFor="jenis-umum" className="cursor-pointer flex-1">
                         Umum
                       </Label>
                     </div>
                 
-                    {/* Pilihan 2: Khusus Ikhwan (Baru) */}
-                    <div className="flex items-center space-x-2 rounded-lg border p-3 hover:bg-slate-50 cursor-pointer">
+                    {/* Pilihan 2: Khusus Ikhwan */}
+                    <div
+                      onClick={() => setForm({ ...form, jenis: "Khusus Ikhwan" })}
+                      className={`flex items-center space-x-3 rounded-lg border p-3 cursor-pointer transition-colors ${
+                        form.jenis === "Khusus Ikhwan"
+                          ? "border-emerald-600 bg-emerald-50/40 text-emerald-950 font-medium"
+                          : "border-slate-200 hover:bg-slate-50 text-slate-700"
+                      }`}
+                    >
                       <RadioGroupItem value="Khusus Ikhwan" id="jenis-ikhwan" />
-                      <Label htmlFor="jenis-ikhwan" className="cursor-pointer font-medium">
+                      <Label htmlFor="jenis-ikhwan" className="cursor-pointer flex-1">
                         Khusus Ikhwan
                       </Label>
                     </div>
                 
                     {/* Pilihan 3: Khusus Muslimah */}
-                    <div className="flex items-center space-x-2 rounded-lg border p-3 hover:bg-slate-50 cursor-pointer">
+                    <div
+                      onClick={() => setForm({ ...form, jenis: "Khusus Muslimah" })}
+                      className={`flex items-center space-x-3 rounded-lg border p-3 cursor-pointer transition-colors ${
+                        form.jenis === "Khusus Muslimah"
+                          ? "border-emerald-600 bg-emerald-50/40 text-emerald-950 font-medium"
+                          : "border-slate-200 hover:bg-slate-50 text-slate-700"
+                      }`}
+                    >
                       <RadioGroupItem value="Khusus Muslimah" id="jenis-muslimah" />
-                      <Label htmlFor="jenis-muslimah" className="cursor-pointer font-medium">
+                      <Label htmlFor="jenis-muslimah" className="cursor-pointer flex-1">
                         Khusus Muslimah
                       </Label>
                     </div>
