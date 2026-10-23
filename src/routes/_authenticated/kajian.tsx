@@ -305,19 +305,36 @@ function KajianPage() {
                     ))}
                   </RadioGroup>
                 </div>
-                <div className="space-y-3">
+                <div className="space-y-2">
                   <Label>Jenis Kajian</Label>
-                  <RadioGroup value={form.jenis} onValueChange={(v) => update("jenis", v as KajianInput["jenis"])}
-                    className="grid grid-cols-1 gap-3">
-                    {(["Umum", "Khusus Muslimah"] as const).map((p) => (
-                      <label key={p}
-                        className={`flex cursor-pointer items-center gap-3 rounded-lg border p-3 transition ${
-                          form.jenis === p ? "border-primary bg-primary/5" : "border-border hover:border-primary/40"
-                        }`}>
-                        <RadioGroupItem value={p} id={`j-${p}`} />
-                        <span className="font-medium">{p}</span>
-                      </label>
-                    ))}
+                  <RadioGroup
+                    value={form.jenis}
+                    onValueChange={(val) => setForm({ ...form, jenis: val })}
+                    className="grid grid-cols-1 gap-2 sm:grid-cols-3"
+                  >
+                    {/* Pilihan 1: Umum */}
+                    <div className="flex items-center space-x-2 rounded-lg border p-3 hover:bg-slate-50 cursor-pointer">
+                      <RadioGroupItem value="Umum" id="jenis-umum" />
+                      <Label htmlFor="jenis-umum" className="cursor-pointer font-medium">
+                        Umum
+                      </Label>
+                    </div>
+                
+                    {/* Pilihan 2: Khusus Ikhwan (Baru) */}
+                    <div className="flex items-center space-x-2 rounded-lg border p-3 hover:bg-slate-50 cursor-pointer">
+                      <RadioGroupItem value="Khusus Ikhwan" id="jenis-ikhwan" />
+                      <Label htmlFor="jenis-ikhwan" className="cursor-pointer font-medium">
+                        Khusus Ikhwan
+                      </Label>
+                    </div>
+                
+                    {/* Pilihan 3: Khusus Muslimah */}
+                    <div className="flex items-center space-x-2 rounded-lg border p-3 hover:bg-slate-50 cursor-pointer">
+                      <RadioGroupItem value="Khusus Muslimah" id="jenis-muslimah" />
+                      <Label htmlFor="jenis-muslimah" className="cursor-pointer font-medium">
+                        Khusus Muslimah
+                      </Label>
+                    </div>
                   </RadioGroup>
                 </div>
               </div>
