@@ -11,7 +11,7 @@ const kajianSchema = z.object({
   judul: z.string().trim().min(1).max(300),
   ketTambahan: z.string().trim().max(1000).default(""),
   kajianRutin: z.enum(["Ba'da Maghrib 🌙", "Ba'da Shubuh 🌄", "Ba'da Ashar"]),
-  jenis: z.enum(["Umum", "Khusus Muslimah"]),
+  jenis: z.enum(["Umum", "Khusus Ikhwan", "Khusus Muslimah"]),
 });
 
 export type KajianInput = z.infer<typeof kajianSchema>;
