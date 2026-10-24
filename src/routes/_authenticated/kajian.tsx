@@ -603,15 +603,16 @@ function KajianPage() {
                   </Button>
                 </div>
               </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-7 gap-1 text-center text-xs font-semibold text-muted-foreground mb-2">
+              <CardContent className="px-2 pb-3 sm:px-6">
+                {/* Header Hari: font & padding diperkecil */}
+                <div className="grid grid-cols-7 gap-0.5 text-center text-[11px] font-semibold text-muted-foreground mb-1">
                   {["Ah", "Sn", "Sl", "Rb", "Km", "Jm", "Sb"].map((d) => (
-                    <div key={d} className="py-1">
-                      {d}
-                    </div>
+                    <div key={d} className="py-0.5">{d}</div>
                   ))}
                 </div>
-                <div className="grid grid-cols-7 gap-1 text-center text-xs">
+
+                {/* Grid Tanggal: gap dipersempit, padding tombol tanggal p-1 */}
+                <div className="grid grid-cols-7 gap-0.5 text-center text-xs">
                   {(() => {
                     const year = currentMonthDate.getFullYear();
                     const month = currentMonthDate.getMonth();
@@ -625,7 +626,7 @@ function KajianPage() {
 
                     const cells = [];
                     for (let i = 0; i < firstDay; i++) {
-                      cells.push(<div key={`empty-${i}`} className="p-2" />);
+                      cells.push(<div key={`empty-${i}`} className="p-0.5" />);
                     }
                     for (let day = 1; day <= totalDays; day++) {
                       const dayStr = String(day).padStart(2, "0");
@@ -643,7 +644,7 @@ function KajianPage() {
                           onClick={() => {
                             setSelectedDate(isSelected ? null : dateKey);
                           }}
-                          className={`relative flex flex-col items-center justify-center p-2 rounded-lg font-medium transition cursor-pointer min-h-[44px] ${
+                          className={`relative flex flex-col items-center justify-center p-1 rounded-md font-medium transition cursor-pointer min-h-[38px] ${
                             isSelected
                               ? "bg-emerald-700 text-white shadow-sm ring-2 ring-emerald-500 font-bold"
                               : isToday
@@ -651,24 +652,24 @@ function KajianPage() {
                               : "hover:bg-muted text-foreground"
                           }`}
                         >
-                          <span>{day}</span>
+                          <span className="text-xs leading-none">{day}</span>
                           <div className="flex items-center gap-0.5 mt-1 h-1.5">
                             {indicator?.maghrib && (
                               <span
                                 title="Kajian Maghrib"
-                                className="h-1.5 w-1.5 rounded-full bg-blue-500 ring-1 ring-white"
+                                className="h-1 w-1 sm:h-1.5 sm:w-1.5 rounded-full bg-blue-500 ring-1 ring-white"
                               />
                             )}
                             {indicator?.shubuh && (
                               <span
                                 title="Kajian Shubuh"
-                                className="h-1.5 w-1.5 rounded-full bg-amber-400 ring-1 ring-white"
+                                className="h-1 w-1 sm:h-1.5 sm:w-1.5 rounded-full bg-amber-400 ring-1 ring-white"
                               />
                             )}
                             {indicator?.ashar && (
                               <span
                                 title="Kajian Ashar"
-                                className="h-1.5 w-1.5 rounded-full bg-emerald-500 ring-1 ring-white"
+                                className="h-1 w-1 sm:h-1.5 sm:w-1.5 rounded-full bg-emerald-500 ring-1 ring-white"
                               />
                             )}
                           </div>
@@ -679,17 +680,18 @@ function KajianPage() {
                   })()}
                 </div>
 
-                <div className="mt-4 flex items-center justify-center gap-4 text-[11px] text-muted-foreground border-t border-border/50 pt-3">
-                  <div className="flex items-center gap-1.5">
-                    <span className="h-2 w-2 rounded-full bg-blue-500" />
+                {/* Keterangan Legenda Titik */}
+                <div className="mt-3 flex items-center justify-center gap-3 text-[10px] sm:text-[11px] text-muted-foreground border-t border-border/50 pt-2.5">
+                  <div className="flex items-center gap-1">
+                    <span className="h-1.5 w-1.5 sm:h-2 sm:w-2 rounded-full bg-blue-500" />
                     <span>Maghrib</span>
                   </div>
-                  <div className="flex items-center gap-1.5">
-                    <span className="h-2 w-2 rounded-full bg-amber-400" />
+                  <div className="flex items-center gap-1">
+                    <span className="h-1.5 w-1.5 sm:h-2 sm:w-2 rounded-full bg-amber-400" />
                     <span>Shubuh</span>
                   </div>
-                  <div className="flex items-center gap-1.5">
-                    <span className="h-2 w-2 rounded-full bg-emerald-500" />
+                  <div className="flex items-center gap-1">
+                    <span className="h-1.5 w-1.5 sm:h-2 sm:w-2 rounded-full bg-emerald-500" />
                     <span>Ashar</span>
                   </div>
                 </div>
