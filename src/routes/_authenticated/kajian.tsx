@@ -29,7 +29,14 @@ import {
 } from "@/components/ui/card";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { toast } from "sonner";
-import { CalendarDays, LogOut, Moon, Send } from "lucide-react";
+import {
+  CalendarDays,
+  ChevronLeft,
+  ChevronRight,
+  LogOut,
+  Moon,
+  Send,
+} from "lucide-react";
 
 const ADMIN_WHATSAPP = "6281297929294";
 
@@ -137,17 +144,34 @@ function gregorianToHijri(gy: number, gm: number, gd: number) {
   const year = 30 * n + j - 30;
   return { year, month, day };
 }
-function formatTanggalDisplay(val: string): string {
-  if (!val) return "";
-  const d = new Date(val);
+
+function normalizeDate(dStr: string): string {
+  if (!dStr) return "";
+  const clean = dStr.split(" ")[0].trim();
+  if (clean.includes("-")) {
+    const parts = clean.split("-");
+    if (parts.length === 3) {
+      if (parts[0].length === 4) {
+        return `${parts[2].padStart(2, "0")}/${parts[1].padStart(2, "0")}/${parts[0]}`;
+      }
+      return `${parts[0].padStart(2, "0")}/${parts[1].padStart(2, "0")}/${parts[2]}`;
+    }
+  }
+  if (clean.includes("/")) {
+    const parts = clean.split("/");
+    if (parts.length === 3) {
+      return `${parts[0].padStart(2, "0")}/${parts[1].padStart(2, "0")}/${parts[2]}`;
+    }
+  }
+  const d = new Date(dStr);
   if (!isNaN(d.getTime())) {
     const day = String(d.getDate()).padStart(2, "0");
-    const month = String(d.getMonth() + 1).padStart(2, "0");
-    const year = d.getFullYear();
-    return `${day}/${month}/${year}`;
+    const m = String(d.getMonth() + 1).padStart(2, "0");
+    return `${day}/${m}/${d.getFullYear()}`;
   }
-  return val;
+  return clean;
 }
+
 function formatHijri(
   dateStr: string,
   kajianRutin: KajianInput["kajianRutin"] = "Ba'da Maghrib 🌙"
@@ -195,6 +219,10 @@ function KajianPage() {
   const fetchJudul = useServerFn(getJudulOptions);
   const [judulOptions, setJudulOptions] = useState<string[]>(JUDUL_OPTIONS);
   const [jadwalList, setJadwalList] = useState<JadwalItem[]>([]);
+
+  // State Kalender Interaktif
+  const [currentMonthDate, setCurrentMonthDate] = useState<Date>(new Date());
+  const [selectedDate, setSelectedDate] = useState<string | null>(null);
 
   useEffect(() => {
     fetchJudul()
@@ -252,6 +280,28 @@ function KajianPage() {
   function update<K extends keyof KajianInput>(k: K, v: KajianInput[K]) {
     setForm((f) => ({ ...f, [k]: v }));
   }
+
+  // Peta indikator titik kajian per tanggal DD/MM/YYYY
+  const jadwalByDate = useMemo(() => {
+    const map = new Map<string, { shubuh: boolean; maghrib: boolean; ashar: boolean }>();
+    jadwalList.forEach((item) => {
+      const key = normalizeDate(item.tanggal);
+      if (!key) return;
+      const prev = map.get(key) || { shubuh: false, maghrib: false, ashar: false };
+      const w = item.waktu.toLowerCase();
+      if (w.includes("shubuh") || w.includes("subuh")) prev.shubuh = true;
+      if (w.includes("maghrib")) prev.maghrib = true;
+      if (w.includes("ashar")) prev.ashar = true;
+      map.set(key, prev);
+    });
+    return map;
+  }, [jadwalList]);
+
+  // Filter jadwal sesuai tanggal yang dipilih di kalender
+  const filteredJadwal = useMemo(() => {
+    if (!selectedDate) return jadwalList;
+    return jadwalList.filter((item) => normalizeDate(item.tanggal) === selectedDate);
+  }, [jadwalList, selectedDate]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -502,20 +552,56 @@ function KajianPage() {
           </CardContent>
         </Card>
 
-        {/* Bagian Bawah: Kalender 1 Bulan & Pantauan Jadwal */}
+        {/* Bagian Bawah: Kalender Interaktif & Pantauan Jadwal */}
         <div className="mt-8 space-y-6">
           <div className="grid gap-6 md:grid-cols-2">
-            {/* 1. Kalender Mini 1 Bulan */}
+            
+            {/* 1. Kalender dengan Slider Bulan & Indikator Titik */}
             <Card className="border-border/60 shadow-sm">
-              <CardHeader className="pb-3">
+              <CardHeader className="pb-3 flex flex-row items-center justify-between space-y-0">
                 <CardTitle className="text-base font-semibold flex items-center gap-2">
                   <CalendarDays className="h-4 w-4 text-emerald-600" />
-                  Kalender{" "}
                   {new Intl.DateTimeFormat("id-ID", {
                     month: "long",
                     year: "numeric",
-                  }).format(new Date())}
+                  }).format(currentMonthDate)}
                 </CardTitle>
+                <div className="flex items-center gap-1">
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    className="h-7 w-7"
+                    onClick={() => {
+                      setCurrentMonthDate(
+                        new Date(
+                          currentMonthDate.getFullYear(),
+                          currentMonthDate.getMonth() - 1,
+                          1
+                        )
+                      );
+                    }}
+                  >
+                    <ChevronLeft className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    className="h-7 w-7"
+                    onClick={() => {
+                      setCurrentMonthDate(
+                        new Date(
+                          currentMonthDate.getFullYear(),
+                          currentMonthDate.getMonth() + 1,
+                          1
+                        )
+                      );
+                    }}
+                  >
+                    <ChevronRight className="h-4 w-4" />
+                  </Button>
+                </div>
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-7 gap-1 text-center text-xs font-semibold text-muted-foreground mb-2">
@@ -527,11 +613,14 @@ function KajianPage() {
                 </div>
                 <div className="grid grid-cols-7 gap-1 text-center text-xs">
                   {(() => {
-                    const now = new Date();
-                    const year = now.getFullYear();
-                    const month = now.getMonth();
+                    const year = currentMonthDate.getFullYear();
+                    const month = currentMonthDate.getMonth();
                     const firstDay = new Date(year, month, 1).getDay();
                     const totalDays = new Date(year, month + 1, 0).getDate();
+
+                    const now = new Date();
+                    const isCurrentMonthNow =
+                      now.getFullYear() === year && now.getMonth() === month;
                     const todayDate = now.getDate();
 
                     const cells = [];
@@ -539,55 +628,122 @@ function KajianPage() {
                       cells.push(<div key={`empty-${i}`} className="p-2" />);
                     }
                     for (let day = 1; day <= totalDays; day++) {
-                      const isToday = day === todayDate;
+                      const dayStr = String(day).padStart(2, "0");
+                      const monthStr = String(month + 1).padStart(2, "0");
+                      const dateKey = `${dayStr}/${monthStr}/${year}`;
+
+                      const isToday = isCurrentMonthNow && day === todayDate;
+                      const isSelected = selectedDate === dateKey;
+                      const indicator = jadwalByDate.get(dateKey);
+
                       cells.push(
-                        <div
+                        <button
                           key={day}
-                          className={`p-2 rounded-md font-medium transition ${
-                            isToday
-                              ? "bg-emerald-600 text-white font-bold shadow-sm"
+                          type="button"
+                          onClick={() => {
+                            setSelectedDate(isSelected ? null : dateKey);
+                          }}
+                          className={`relative flex flex-col items-center justify-center p-2 rounded-lg font-medium transition cursor-pointer min-h-[44px] ${
+                            isSelected
+                              ? "bg-emerald-700 text-white shadow-sm ring-2 ring-emerald-500 font-bold"
+                              : isToday
+                              ? "bg-emerald-100 text-emerald-950 font-bold border border-emerald-400"
                               : "hover:bg-muted text-foreground"
                           }`}
                         >
-                          {day}
-                        </div>
+                          <span>{day}</span>
+                          <div className="flex items-center gap-0.5 mt-1 h-1.5">
+                            {indicator?.maghrib && (
+                              <span
+                                title="Kajian Maghrib"
+                                className="h-1.5 w-1.5 rounded-full bg-blue-500 ring-1 ring-white"
+                              />
+                            )}
+                            {indicator?.shubuh && (
+                              <span
+                                title="Kajian Shubuh"
+                                className="h-1.5 w-1.5 rounded-full bg-amber-400 ring-1 ring-white"
+                              />
+                            )}
+                            {indicator?.ashar && (
+                              <span
+                                title="Kajian Ashar"
+                                className="h-1.5 w-1.5 rounded-full bg-emerald-500 ring-1 ring-white"
+                              />
+                            )}
+                          </div>
+                        </button>
                       );
                     }
                     return cells;
                   })()}
                 </div>
+
+                <div className="mt-4 flex items-center justify-center gap-4 text-[11px] text-muted-foreground border-t border-border/50 pt-3">
+                  <div className="flex items-center gap-1.5">
+                    <span className="h-2 w-2 rounded-full bg-blue-500" />
+                    <span>Maghrib</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <span className="h-2 w-2 rounded-full bg-amber-400" />
+                    <span>Shubuh</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <span className="h-2 w-2 rounded-full bg-emerald-500" />
+                    <span>Ashar</span>
+                  </div>
+                </div>
               </CardContent>
             </Card>
 
-            {/* 2. Pantauan Jadwal 7 Hari Terakhir */}
+            {/* 2. Pantauan Jadwal Terfilter */}
             <Card className="border-border/60 shadow-sm">
-              <CardHeader className="pb-3">
-                <CardTitle className="text-base font-semibold">
-                  Pantauan Jadwal Terakhir
-                </CardTitle>
-                <CardDescription className="text-xs">
-                  Catatan kajian yang telah masuk ke sistem
-                </CardDescription>
+              <CardHeader className="pb-3 flex flex-row items-center justify-between space-y-0">
+                <div>
+                  <CardTitle className="text-base font-semibold">
+                    Pantauan Jadwal Terakhir
+                  </CardTitle>
+                  <CardDescription className="text-xs">
+                    {selectedDate ? (
+                      <span className="text-emerald-600 font-medium">
+                        Menampilkan kajian tanggal: {selectedDate}
+                      </span>
+                    ) : (
+                      "Catatan kajian yang telah masuk ke sistem"
+                    )}
+                  </CardDescription>
+                </div>
+                {selectedDate && (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    className="h-7 text-xs"
+                    onClick={() => setSelectedDate(null)}
+                  >
+                    Lihat Semua
+                  </Button>
+                )}
               </CardHeader>
               <CardContent>
                 <div className="space-y-3 max-h-64 overflow-y-auto pr-1">
-                  {jadwalList.length === 0 ? (
-                    <p className="text-xs text-muted-foreground text-center py-6">
-                      Belum ada rekaman jadwal.
+                  {filteredJadwal.length === 0 ? (
+                    <p className="text-xs text-muted-foreground text-center py-8">
+                      {selectedDate
+                        ? `Tidak ada jadwal kajian pada ${selectedDate}.`
+                        : "Belum ada rekaman jadwal."}
                     </p>
                   ) : (
-                    jadwalList.map((item, idx) => (
+                    filteredJadwal.map((item, idx) => (
                       <div
                         key={idx}
                         className="flex items-start justify-between gap-3 p-2.5 rounded-lg border border-border/50 bg-secondary/20 hover:bg-secondary/40 transition"
                       >
                         <div className="min-w-0 flex-1">
                           <div className="flex items-center gap-1.5 text-xs text-muted-foreground mb-0.5">
-                            <span className="font-medium text-foreground">
-                              {item.hari}
-                            </span>
+                            <span className="font-medium text-foreground">{item.hari}</span>
                             <span>•</span>
-                            <span>{formatTanggalDisplay(item.tanggal)}</span>
+                            <span>{normalizeDate(item.tanggal)}</span>
                           </div>
                           <p className="text-xs font-semibold text-foreground truncate">
                             {item.judul || "Kajian Rutin"}
@@ -599,11 +755,17 @@ function KajianPage() {
                         <span
                           className={`text-[10px] font-bold px-2 py-0.5 rounded-full shrink-0 ${
                             item.waktu.includes("Maghrib")
-                              ? "bg-amber-100 text-amber-800"
-                              : "bg-emerald-100 text-emerald-800"
+                              ? "bg-blue-100 text-blue-800"
+                              : item.waktu.includes("Ashar")
+                              ? "bg-emerald-100 text-emerald-800"
+                              : "bg-amber-100 text-amber-800"
                           }`}
                         >
-                          {item.waktu.includes("Maghrib") ? "Maghrib" : "Shubuh"}
+                          {item.waktu.includes("Maghrib")
+                            ? "Maghrib"
+                            : item.waktu.includes("Ashar")
+                            ? "Ashar"
+                            : "Shubuh"}
                         </span>
                       </div>
                     ))
@@ -611,6 +773,7 @@ function KajianPage() {
                 </div>
               </CardContent>
             </Card>
+
           </div>
         </div>
       </div>
