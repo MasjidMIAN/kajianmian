@@ -637,6 +637,7 @@ function KajianPage() {
                       const isSelected = selectedDate === dateKey;
                       const indicator = jadwalByDate.get(dateKey);
 
+                      {/* GANTI BAGIAN RENDER BUTTON TANGGAL MENJADI SEPERTI INI: */}
                       cells.push(
                         <button
                           key={day}
@@ -644,32 +645,34 @@ function KajianPage() {
                           onClick={() => {
                             setSelectedDate(isSelected ? null : dateKey);
                           }}
-                          className={`relative flex flex-col items-center justify-center p-1 rounded-md font-medium transition cursor-pointer min-h-[38px] ${
+                          className={`relative flex flex-col items-center justify-start pt-1 pb-3 rounded-md font-medium transition cursor-pointer h-10 w-full overflow-hidden ${
                             isSelected
-                              ? "bg-emerald-700 text-white shadow-sm ring-2 ring-emerald-500 font-bold"
+                              ? "bg-emerald-700 text-white shadow-sm font-bold"
                               : isToday
                               ? "bg-emerald-100 text-emerald-950 font-bold border border-emerald-400"
                               : "hover:bg-muted text-foreground"
                           }`}
                         >
                           <span className="text-xs leading-none">{day}</span>
-                          <div className="flex items-center gap-0.5 mt-1 h-1.5">
+                          
+                          {/* Wadah titik dibuat absolute agar posisinya melayang dan TIDAK BISA mendorong lebar kolom */}
+                          <div className="absolute bottom-1 left-0 right-0 flex items-center justify-center gap-0.5 pointer-events-none">
                             {indicator?.maghrib && (
                               <span
                                 title="Kajian Maghrib"
-                                className="h-1 w-1 sm:h-1.5 sm:w-1.5 rounded-full bg-blue-500 ring-1 ring-white"
+                                className="h-1.5 w-1.5 rounded-full bg-blue-500 shrink-0"
                               />
                             )}
                             {indicator?.shubuh && (
                               <span
                                 title="Kajian Shubuh"
-                                className="h-1 w-1 sm:h-1.5 sm:w-1.5 rounded-full bg-amber-400 ring-1 ring-white"
+                                className="h-1.5 w-1.5 rounded-full bg-amber-400 shrink-0"
                               />
                             )}
                             {indicator?.ashar && (
                               <span
                                 title="Kajian Ashar"
-                                className="h-1 w-1 sm:h-1.5 sm:w-1.5 rounded-full bg-emerald-500 ring-1 ring-white"
+                                className="h-1.5 w-1.5 rounded-full bg-emerald-500 shrink-0"
                               />
                             )}
                           </div>
