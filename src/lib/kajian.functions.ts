@@ -16,6 +16,14 @@ const kajianSchema = z.object({
 
 export type KajianInput = z.infer<typeof kajianSchema>;
 
+export interface JadwalItem {
+  tanggal: string;
+  hari: string;
+  waktu: string;
+  pemateri: string;
+  judul: string;
+}
+
 export const getJudulOptions = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async () => {
@@ -23,11 +31,12 @@ export const getJudulOptions = createServerFn({ method: "GET" })
     if (!url) throw new Error("GOOGLE_SHEET_WEBHOOK_URL belum diset");
     const res = await fetch(url, { method: "GET", redirect: "follow" });
     if (!res.ok) throw new Error(`Gagal ambil judul (${res.status})`);
-    const json = (await res.json()) as { data?: unknown };
-    const data = Array.isArray(json?.data)
-      ? json.data.map((x) => String(x ?? "").trim()).filter(Boolean)
-      : [];
-    return { data };
+    
+    const json = (await res.json()) as { data?: unknown; jadwal?: JadwalItem[] };
+    const data = Array.isArray(json?.data) ? json.data.map((x) => String(x ?? "").trim()).filter(Boolean) : [];
+    const jadwal = Array.isArray(json?.jadwal) ? json.jadwal : [];
+
+    return { data, jadwal };
   });
 
 export const submitKajian = createServerFn({ method: "POST" })
