@@ -137,7 +137,17 @@ function gregorianToHijri(gy: number, gm: number, gd: number) {
   const year = 30 * n + j - 30;
   return { year, month, day };
 }
-
+function formatTanggalDisplay(val: string): string {
+  if (!val) return "";
+  const d = new Date(val);
+  if (!isNaN(d.getTime())) {
+    const day = String(d.getDate()).padStart(2, "0");
+    const month = String(d.getMonth() + 1).padStart(2, "0");
+    const year = d.getFullYear();
+    return `${day}/${month}/${year}`;
+  }
+  return val;
+}
 function formatHijri(
   dateStr: string,
   kajianRutin: KajianInput["kajianRutin"] = "Ba'da Maghrib 🌙"
@@ -577,7 +587,7 @@ function KajianPage() {
                               {item.hari}
                             </span>
                             <span>•</span>
-                            <span>{item.tanggal}</span>
+                            <span>{formatTanggalDisplay(item.tanggal)}</span>
                           </div>
                           <p className="text-xs font-semibold text-foreground truncate">
                             {item.judul || "Kajian Rutin"}
