@@ -554,7 +554,7 @@ function KajianPage() {
 
         {/* Bagian Bawah: Kalender Interaktif & Pantauan Jadwal */}
         <div className="mt-8 space-y-6">
-          <div className="grid gap-6 md:grid-cols-2 [grid-template-columns:repeat(auto-fit,minmax(0,1fr))]">  
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">  
             
             {/* 1. Kalender dengan Slider Bulan & Indikator Titik */}
             <Card className="border-border/60 shadow-sm min-w-0 w-full overflow-hidden">
