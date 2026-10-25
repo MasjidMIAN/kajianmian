@@ -554,10 +554,10 @@ function KajianPage() {
 
         {/* Bagian Bawah: Kalender Interaktif & Pantauan Jadwal */}
         <div className="mt-8 space-y-6">
-          <div className="grid gap-6 md:grid-cols-2">
+          <div className="grid gap-6 md:grid-cols-2 [grid-template-columns:repeat(auto-fit,minmax(0,1fr))]">  
             
             {/* 1. Kalender dengan Slider Bulan & Indikator Titik */}
-            <Card className="border-border/60 shadow-sm">
+            <Card className="border-border/60 shadow-sm min-w-0 w-full overflow-hidden">
               <CardHeader className="pb-3 flex flex-row items-center justify-between space-y-0">
                 <CardTitle className="text-base font-semibold flex items-center gap-2">
                   <CalendarDays className="h-4 w-4 text-emerald-600" />
@@ -702,7 +702,7 @@ function KajianPage() {
             </Card>
 
             {/* 2. Pantauan Jadwal Terfilter */}
-            <Card className="border-border/60 shadow-sm">
+            <Card className="border-border/60 shadow-sm min-w-0 w-full overflow-hidden">
               <CardHeader className="pb-3 flex flex-row items-center justify-between space-y-0">
                 <div>
                   <CardTitle className="text-base font-semibold">
