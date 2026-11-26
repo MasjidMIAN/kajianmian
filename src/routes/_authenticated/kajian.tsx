@@ -227,11 +227,24 @@ function KajianPage() {
   useEffect(() => {
     fetchJudul()
       .then((res) => {
-        if (res.data.length) {
-          const list = res.data.filter((x) => x !== "Yang lain:");
-          setJudulOptions([...list, "Yang lain:"]);
+        if (Array.isArray(res?.data) && res.data.length > 0) {
+          const cleanList = res.data
+            .map((item: unknown) => {
+              if (typeof item === "string") return item.trim();
+              if (item && typeof item === "object") {
+                const obj = item as Record<string, unknown>;
+                return String(obj.judul ?? obj.label ?? obj.value ?? obj.name ?? "").trim();
+              }
+              return "";
+            })
+            .filter((x) => x !== "" && x !== "[object Object]" && x !== "Yang lain:");
+
+          const uniqueList = Array.from(new Set(cleanList));
+          if (uniqueList.length > 0) {
+            setJudulOptions([...uniqueList, "Yang lain:"]);
+          }
         }
-        if (res.jadwal) {
+        if (Array.isArray(res?.jadwal)) {
           setJadwalList(res.jadwal);
         }
       })
