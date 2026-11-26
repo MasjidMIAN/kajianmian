@@ -29,12 +29,44 @@ export const getJudulOptions = createServerFn({ method: "GET" })
   .handler(async () => {
     const url = process.env.GOOGLE_SHEET_WEBHOOK_URL;
     if (!url) throw new Error("GOOGLE_SHEET_WEBHOOK_URL belum diset");
+
     const res = await fetch(url, { method: "GET", redirect: "follow" });
-    if (!res.ok) throw new Error(`Gagal ambil judul (${res.status})`);
-    
-    const json = (await res.json()) as { data?: unknown; jadwal?: JadwalItem[] };
-    const data = Array.isArray(json?.data) ? json.data.map((x) => String(x ?? "").trim()).filter(Boolean) : [];
-    const jadwal = Array.isArray(json?.jadwal) ? json.jadwal : [];
+    if (!res.ok) throw new Error(`Gagal ambil data (${res.status})`);
+
+    const json = (await res.json()) as {
+      data?: unknown;
+      jadwal?: unknown;
+    };
+
+    // Sanitasi daftar judul agar selalu string murni (anti [object Object])
+    const data = Array.isArray(json?.data)
+      ? json.data
+          .map((x: unknown) => {
+            if (typeof x === "string") return x.trim();
+            if (x && typeof x === "object") {
+              const obj = x as Record<string, unknown>;
+              return String(obj.judul ?? obj.label ?? obj.value ?? "").trim();
+            }
+            return "";
+          })
+          .filter((s) => s !== "" && s !== "[object Object]")
+      : [];
+
+    // Sanitasi riwayat jadwal untuk kalender & pantauan
+    const jadwal: JadwalItem[] = Array.isArray(json?.jadwal)
+      ? json.jadwal
+          .map((item: unknown) => {
+            const obj = (item ?? {}) as Record<string, unknown>;
+            return {
+              tanggal: String(obj.tanggal ?? "").trim(),
+              hari: String(obj.hari ?? "").trim(),
+              waktu: String(obj.waktu ?? "").trim(),
+              pemateri: String(obj.pemateri ?? "").trim(),
+              judul: String(obj.judul ?? "").trim(),
+            };
+          })
+          .filter((item) => item.tanggal !== "")
+      : [];
 
     return { data, jadwal };
   });
@@ -73,7 +105,6 @@ export const submitKajian = createServerFn({ method: "POST" })
       throw new Error(`Gagal simpan ke Google Sheet (${res.status})`);
     }
 
-    // Ambil properti "message" dari response JSON Apps Script
     let message = "";
     try {
       const json = (await res.json()) as { message?: unknown };
