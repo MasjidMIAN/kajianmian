@@ -38,7 +38,6 @@ export const getJudulOptions = createServerFn({ method: "GET" })
       jadwal?: unknown;
     };
 
-    // Sanitasi daftar judul agar selalu string murni (anti [object Object])
     const data = Array.isArray(json?.data)
       ? json.data
           .map((x: unknown) => {
@@ -52,7 +51,6 @@ export const getJudulOptions = createServerFn({ method: "GET" })
           .filter((s) => s !== "" && s !== "[object Object]")
       : [];
 
-    // Sanitasi riwayat jadwal untuk kalender & pantauan
     const jadwal: JadwalItem[] = Array.isArray(json?.jadwal)
       ? json.jadwal
           .map((item: unknown) => {
